@@ -3,14 +3,16 @@
 
 #!/usr/bin/python
 
-import sys          # comand line arguments
-import pyaudio      # generate sounds
+import sys                      # comand line arguments
+import pyaudio                  # Generate beeping sounds
+from random import uniform      # Generate random noise values
 import numpy as np
 
 # ▄ !
 
 dit = '·'
 dah = '-'
+unknown = '?'
 
 path = 'sounds/'
 
@@ -87,7 +89,7 @@ def encode( message ):
             try:
                 codified += code[letter]
             except:
-                codified += '?'
+                codified += unknown
 
     return codified
 
@@ -108,13 +110,15 @@ speed = 1
 volume = 0.5
 samplingRate = 44100
 frequency = 880.0
+noiseBaseFrequency = 27.5
+noiseFactor = 0.1
 
 # Durations of both sounds and silences
-ditDuration = .4
+ditDuration = .3
 dahDuration = ditDuration * 3
 
 
-def generateSample( duration ):
+def generateSample( duration, frequency = 800 ):
 
     samples = (
         np.sin(
@@ -123,6 +127,17 @@ def generateSample( duration ):
     ).astype( np.float32 )
 
     return samples
+
+def randomizeSample( sample, factor ):
+
+    for i in range(len(sample)):
+        sample[i] += uniform( -factor, factor )
+        if sample[i] > 1:
+            sample[i] = 1
+        elif sample[i] < -1:
+            sample[i] = 1
+
+    return sample
 
 
 # Getting ready to sing
@@ -135,12 +150,15 @@ stream = player.open(
 )
 
 
-# Checking class notes again before final exam
+# Checking class notes again before the audition
 
-ditSound = generateSample( ditDuration / speed )
-dahSound = generateSample( dahDuration / speed )
+ditSound = generateSample( ditDuration / speed, frequency )
+dahSound = generateSample( dahDuration / speed, frequency )
+noise = randomizeSample( generateSample( dahDuration / speed, noiseBaseFrequency ), noiseFactor )
 shortPause = ditSound * 0
 longPause = dahSound * 0
+
+
 
 
 def playDit():
@@ -148,6 +166,9 @@ def playDit():
 
 def playDah():
     stream.write( volume * dahSound )
+
+def playNoise():
+    stream.write( volume * noise )
 
 def playBetweenLetters():
     stream.write( shortPause )
@@ -163,6 +184,8 @@ def playWord( word ):
             playDit()
         elif letter == dah:
             playDah()
+        elif letter == unknown:
+            playNoise()
         playBetweenLetters()
 
 def play( message ):
@@ -174,6 +197,20 @@ def play( message ):
 
 # OK, it's my turn now
 play( message )
+
+
+'''
+import matplotlib.pyplot as plt
+
+
+
+
+stream.write( noise )
+
+
+plt.plot( range(1000), noise[:1000] )
+plt.show()
+'''
 
 
 # (Wait for applauses)
