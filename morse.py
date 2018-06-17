@@ -1,3 +1,6 @@
+# ruido para los caracteres desconocidos
+
+
 #!/usr/bin/python
 
 import sys          # comand line arguments
@@ -101,13 +104,13 @@ print( message )
 
 player = pyaudio.PyAudio()
 
+speed = 1
 volume = 0.5
-speed = 0.5
 samplingRate = 44100
 frequency = 880.0
 
 # Durations of both sounds and silences
-ditDuration = .3
+ditDuration = .4
 dahDuration = ditDuration * 3
 
 
