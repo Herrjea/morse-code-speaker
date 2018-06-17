@@ -1,11 +1,15 @@
 #!/usr/bin/python
 
-import sys
+import sys          # comand line arguments
+import pyaudio      # generate sounds
+import numpy as np
 
 # ▄ !
 
 dit = '·'
 dah = '-'
+
+path = 'sounds/'
 
 code = {
 
@@ -85,4 +89,92 @@ def encode( message ):
     return codified
 
 
-print( encode( ' '.join( sys.argv[1:] ) ) )
+
+message = encode( ' '.join( sys.argv[1:] ) )
+
+print( message )
+
+
+
+## Making it speak ##
+
+
+player = pyaudio.PyAudio()
+
+volume = 0.5
+samplingRate = 44100
+frequency = 880.0
+
+# Durations of both sounds and silences
+ditDuration = .3
+dahDuration = ditDuration * 3
+
+
+def generateSample( duration ):
+
+    samples = (
+        np.sin(
+            2 * np.pi * np.arange( samplingRate * duration ) * frequency / samplingRate
+        )
+    ).astype( np.float32 )
+
+    return samples
+
+
+# Getting ready to sing
+
+stream = player.open(
+    format = pyaudio.paFloat32,
+    channels = 1,
+    rate = samplingRate,
+    output = True
+)
+
+
+# Checking class notes again before final exam
+
+ditSound = generateSample( ditDuration )
+dahSound = generateSample( dahDuration )
+shortPause = ditSound * 0
+longPause = dahSound * 0
+
+
+def playDit():
+    stream.write( volume * ditSound )
+
+def playDah():
+    stream.write( volume * dahSound )
+
+def playBetweenLetters():
+    stream.write( shortPause )
+
+def playBetweenWords():
+    stream.write( longPause )
+
+
+def playWord( word ):
+
+    for letter in word:
+        print(letter)
+        if letter == dit:
+            playDit()
+        elif letter == dah:
+            playDah()
+        playBetweenLetters()
+
+def play( message ):
+
+    for word in message.split( '   ' ):
+        print( 'Word: ', word )
+        playWord( word )
+        playBetweenWords()
+
+
+# OK, it's my turn now
+play( message )
+
+
+# (Wait for applauses)
+stream.stop_stream()
+stream.close()
+player.terminate()
