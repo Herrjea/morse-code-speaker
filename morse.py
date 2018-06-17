@@ -102,6 +102,7 @@ print( message )
 player = pyaudio.PyAudio()
 
 volume = 0.5
+speed = 0.5
 samplingRate = 44100
 frequency = 880.0
 
@@ -133,8 +134,8 @@ stream = player.open(
 
 # Checking class notes again before final exam
 
-ditSound = generateSample( ditDuration )
-dahSound = generateSample( dahDuration )
+ditSound = generateSample( ditDuration / speed )
+dahSound = generateSample( dahDuration / speed )
 shortPause = ditSound * 0
 longPause = dahSound * 0
 
@@ -155,7 +156,6 @@ def playBetweenWords():
 def playWord( word ):
 
     for letter in word:
-        print(letter)
         if letter == dit:
             playDit()
         elif letter == dah:
@@ -165,7 +165,6 @@ def playWord( word ):
 def play( message ):
 
     for word in message.split( '   ' ):
-        print( 'Word: ', word )
         playWord( word )
         playBetweenWords()
 
