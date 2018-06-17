@@ -159,8 +159,6 @@ shortPause = ditSound * 0
 longPause = dahSound * 0
 
 
-
-
 def playDit():
     stream.write( volume * ditSound )
 
@@ -198,19 +196,6 @@ def play( message ):
 # OK, it's my turn now
 play( message )
 
-
-'''
-import matplotlib.pyplot as plt
-
-
-
-
-stream.write( noise )
-
-
-plt.plot( range(1000), noise[:1000] )
-plt.show()
-'''
 
 
 # (Wait for applauses)
